@@ -8,11 +8,13 @@ public class PlayerMovement : MonoBehaviour
     public float JumpHieght = 2f;
     public float JumpHieghtGravity = -10f;
     public float VerticalInput;
+    private Rigidbody playerRb;
+    private Animator playerAnim;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerRb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame

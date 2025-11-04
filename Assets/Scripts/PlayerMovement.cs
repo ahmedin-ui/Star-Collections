@@ -23,5 +23,6 @@ public class PlayerMovement : MonoBehaviour
     {
         VerticalInput = Input.GetAxis("Vertical");
         transform.Translate(Vector3.forward * VerticalInput * Time.deltaTime * PlayerSpeed);
+        playerAnim.SetFloat("Speed", Mathf.Abs(VerticalInput));
     }
 }

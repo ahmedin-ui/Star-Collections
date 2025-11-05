@@ -6,10 +6,10 @@ public class PlayerMovement : MonoBehaviour
 {
     public float PlayerSpeed = 5f;
     public float JumpHieght = 2f;
-    public float JumpHieghtGravity = -10f;
-    public float VerticalInput;
+    public float HorizontalInput;
     private Rigidbody playerRb;
     private Animator playerAnim;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -21,8 +21,9 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        VerticalInput = Input.GetAxis("Vertical");
-        transform.Translate(Vector3.forward * VerticalInput * Time.deltaTime * PlayerSpeed);
-        playerAnim.SetFloat("Speed", Mathf.Abs(VerticalInput));
+        HorizontalInput = Input.GetAxis("Horizontal");
+        transform.Translate(Vector3.forward * HorizontalInput * Time.deltaTime * PlayerSpeed);
+        playerAnim.SetFloat("Speed", Mathf.Abs(HorizontalInput));
+    
     }
 }

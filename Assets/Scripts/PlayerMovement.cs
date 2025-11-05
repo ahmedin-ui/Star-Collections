@@ -5,10 +5,11 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float PlayerSpeed = 5f;
-    public float JumpHieght = 2f;
+    public float JumpHieght = 6f;
     public float HorizontalInput;
     private Rigidbody playerRb;
     private Animator playerAnim;
+    private bool isPlatform = true;
     
 
     // Start is called before the first frame update

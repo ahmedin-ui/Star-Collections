@@ -41,6 +41,11 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            isPlatform = true;
+            playerAnim.SetBool("isJumping", false);
+            playerAnim.SetBool("isFalling", false);
+        }
     }
 }

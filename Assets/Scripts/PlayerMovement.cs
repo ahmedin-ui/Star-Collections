@@ -33,6 +33,14 @@ public class PlayerMovement : MonoBehaviour
             playerRb.AddForce(Vector3.up * JumpHieght, ForceMode.Impulse);
         }
         // while falling 
-    
+        if (!isPlatform && playerRb.velocity.y < 0)
+        {
+            playerAnim.SetBool("isFalling", true);
+        }
+
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float PlayerSpeed = 5f;
+    public float PlayerSpeed;
     public float JumpHieght = 6f;
     public float HorizontalInput;
     private Rigidbody playerRb;

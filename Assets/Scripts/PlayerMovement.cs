@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private Animator playerAnim;
     private bool isPlatform = true;
     
+    
 
     // Start is called before the first frame update
     void Start()
@@ -25,11 +26,12 @@ public class PlayerMovement : MonoBehaviour
         HorizontalInput = Input.GetAxis("Horizontal");
         transform.Translate(Vector3.forward * HorizontalInput * Time.deltaTime * PlayerSpeed);
         playerAnim.SetFloat("Speed", Mathf.Abs(HorizontalInput));
+        
         // jump input 
         if (Input.GetKeyDown(KeyCode.Space) && isPlatform)
         {
             isPlatform = false;
-            playerAnim.SetBool("isJumping", true);
+            playerAnim.SetTrigger("Jump");
             playerRb.AddForce(Vector3.up * JumpHieght, ForceMode.Impulse);
         }
         // while falling 

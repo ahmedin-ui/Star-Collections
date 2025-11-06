@@ -1,18 +1,17 @@
 using UnityEngine;
-using UnityEngine.UI;  // for UI
-using UnityEngine.SceneManagement; // optional if you want to reload scenes
+using UnityEngine.UI;
+using TMPro;  // 👈 Add this line
 
 public class PlayerCollect : MonoBehaviour
 {
-    public Text starText;           // Assign from UI
-    public GameObject winPanel;     // Assign from UI
+    public TextMeshProUGUI starText; // 👈 Change type
+    public GameObject winPanel;
 
     private int totalStars;
     private int collectedStars = 0;
 
     void Start()
     {
-        // Count all stars in the scene
         totalStars = GameObject.FindGameObjectsWithTag("Star").Length;
         starText.text = "Stars: " + collectedStars + " / " + totalStars;
         winPanel.SetActive(false);
@@ -26,7 +25,6 @@ public class PlayerCollect : MonoBehaviour
             collectedStars++;
             starText.text = "Stars: " + collectedStars + " / " + totalStars;
 
-            // Check if all stars collected
             if (collectedStars >= totalStars)
             {
                 WinGame();
@@ -38,6 +36,5 @@ public class PlayerCollect : MonoBehaviour
     {
         winPanel.SetActive(true);
         Debug.Log("You Won!");
-        // Optionally stop movement or show animation here
     }
 }

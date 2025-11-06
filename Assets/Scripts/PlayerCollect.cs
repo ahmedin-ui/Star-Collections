@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;  // 👈 Add this line
+using TMPro;  
+
 
 public class PlayerCollect : MonoBehaviour
 {
@@ -20,28 +21,29 @@ public class PlayerCollect : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
+{
+    Debug.Log("Triggered with: " + other.name + " (tag: " + other.tag + ")");
+
+    if (other.CompareTag("Star"))
     {
-        if (other.CompareTag("Star"))
-        {
-            Destroy(other.gameObject);
-            collectedStars++;
-            starText.text = "Stars: " + collectedStars + " / " + totalStars;
+        Destroy(other.gameObject);
+        collectedStars++;
+        starText.text = "Stars: " + collectedStars + " / " + totalStars;
 
-            if (collectedStars >= totalStars)
-            {
-                WinGame();
-            }
-        }
-        if (other.CompareTag("Obstacle")) 
+        if (collectedStars >= totalStars)
         {
-            GameOver();
+            WinGame();
         }
-
     }
+    if (other.CompareTag("Obstacle")) 
+    {
+        GameOver();
+    }
+}
     void Update()
     {
         // If player falls below Y = -5, trigger game over
-        if (transform.position.y < -5)
+        if (transform.position.y < -200)
         {
             GameOver();
         }
@@ -57,4 +59,6 @@ public class PlayerCollect : MonoBehaviour
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f; // Pause the game
     }
+ 
+
 }

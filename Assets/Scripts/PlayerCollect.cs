@@ -4,7 +4,7 @@ using TMPro;  // 👈 Add this line
 
 public class PlayerCollect : MonoBehaviour
 {
-    public TextMeshProUGUI starText; // 👈 Change type
+    public TextMeshProUGUI starText; 
     public GameObject winPanel;
 
     private int totalStars;

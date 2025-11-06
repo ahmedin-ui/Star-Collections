@@ -5,8 +5,7 @@ using TMPro;  // 👈 Add this line
 public class PlayerCollect : MonoBehaviour
 {
     public TextMeshProUGUI starText; 
-    public GameObject winPanel;
-
+    
     private int totalStars;
     private int collectedStars = 0;
     public GameObject winPanel;
@@ -32,6 +31,10 @@ public class PlayerCollect : MonoBehaviour
             {
                 WinGame();
             }
+        }
+        if (other.CompareTag("Obstacle")) 
+        {
+            GameOver();
         }
 
     }

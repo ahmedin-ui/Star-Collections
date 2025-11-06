@@ -9,12 +9,15 @@ public class PlayerCollect : MonoBehaviour
 
     private int totalStars;
     private int collectedStars = 0;
+    public GameObject winPanel;
+    public GameObject gameOverPanel;
 
     void Start()
     {
         totalStars = GameObject.FindGameObjectsWithTag("Star").Length;
         starText.text = "Stars: " + collectedStars + " / " + totalStars;
         winPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -30,11 +33,25 @@ public class PlayerCollect : MonoBehaviour
                 WinGame();
             }
         }
+
+    }
+    void Update()
+    {
+        // If player falls below Y = -5, trigger game over
+        if (transform.position.y < -5)
+        {
+            GameOver();
+        }
     }
 
     void WinGame()
     {
         winPanel.SetActive(true);
         Debug.Log("You Won!");
+    }
+    void GameOver()
+    {
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0f; // Pause the game
     }
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;  
+using TMPro;
+using UnityEngine.SceneManagement;
+
 
 
 public class PlayerCollect : MonoBehaviour
@@ -58,6 +60,11 @@ public class PlayerCollect : MonoBehaviour
     {
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f; // Pause the game
+    }
+    public void RestartGame()
+    {
+        Time.timeScale = 1f; // resume game speed
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
  
 

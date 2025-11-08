@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float PlayerSpeed;
-    public float JumpHieght = 6f;
+    public float JumpHieght = 4f;
     public float HorizontalInput;
     private Rigidbody playerRb;
     private Animator playerAnim;
@@ -39,6 +39,10 @@ public class PlayerMovement : MonoBehaviour
         {
             playerAnim.SetBool("isFalling", true);
         }
+        if (transform.position.y > 10f) // you can adjust 10f to your scene height
+        {
+            playerRb.velocity = Vector3.zero; // stop upward motion
+        }
 
     }
     private void OnCollisionEnter(Collision collision)
@@ -50,4 +54,9 @@ public class PlayerMovement : MonoBehaviour
             playerAnim.SetBool("isFalling", false);
         }
     }
+    void FixedUpdate()
+{
+    // extra gravity force to make player fall faster
+    playerRb.AddForce(Vector3.down * 65f); // increase 20f → stronger gravity
+}
 }

@@ -57,6 +57,6 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
 {
     // extra gravity force to make player fall faster
-    playerRb.AddForce(Vector3.down * 65f); // increase 20f → stronger gravity
+    playerRb.AddForce(Vector3.down * 65f); 
 }
 }

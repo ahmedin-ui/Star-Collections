@@ -31,7 +31,7 @@ public class PlayerCollect : MonoBehaviour
         Destroy(other.gameObject);
         collectedStars++;
             starText.text = "Stars: " + collectedStars + " / " + totalStars;
-            ScoreManager.Instance.AddCoins(1);
+           ScoreManager.Instance.AddStars(1);
 
         if (collectedStars >= totalStars)
         {

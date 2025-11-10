@@ -2,20 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance { get; private set; }
-    // Start is called before the first frame update
-    private const string COINS_KEY = "PlayerCoins";
-    public int Coins { get; private set; }
+
+    private const string STARS_KEY = "PlayerStars";
+    public int Stars { get; private set; }
 
     [Header("UI Reference (Optional)")]
-    public TextMeshProUGUI coinText; // Drag UI text here in Inspector
+    public TextMeshProUGUI StarText; // Drag your LobbyScene text here (optional)
 
     private void Awake()
     {
-        // Singleton pattern (only one instance)
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -24,35 +24,50 @@ public class ScoreManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        LoadCoins();
+        LoadStars();
     }
 
     private void Start()
     {
-        UpdateCoinUI();
+        UpdateStarUI();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void AddCoins(int amount)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Coins += amount;
-        SaveCoins();
-        UpdateCoinUI();
+        // Try to find the "StarText_Game" object automatically in new scenes
+        if (StarText == null)
+        {
+            var foundText = GameObject.Find("StarText_Game");
+            if (foundText != null)
+            {
+                StarText = foundText.GetComponent<TextMeshProUGUI>();
+                UpdateStarUI();
+            }
+        }
     }
 
-    public void SaveCoins()
+    public void AddStars(int amount)
     {
-        PlayerPrefs.SetInt(COINS_KEY, Coins);
+        Stars += amount;
+        SaveStars();
+        UpdateStarUI();
+    }
+
+    public void SaveStars()
+    {
+        PlayerPrefs.SetInt(STARS_KEY, Stars);
         PlayerPrefs.Save();
     }
 
-    public void LoadCoins()
+    public void LoadStars()
     {
-        Coins = PlayerPrefs.GetInt(COINS_KEY, 0);
+        Stars = PlayerPrefs.GetInt(STARS_KEY, 0);
     }
 
-    private void UpdateCoinUI()
+    private void UpdateStarUI()
     {
-        if (coinText != null)
-            coinText.text = "Coins: " + Coins.ToString();
+        if (StarText != null)
+            StarText.text = "Stars: " + Stars.ToString();
     }
 }

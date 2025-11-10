@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MainMenuManager : MonoBehaviour
 {
+    [SerializeField] private string gameplaySceneName = "GameScene";
     // Start is called before the first frame update
     void Start()
     {

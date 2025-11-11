@@ -9,17 +9,16 @@ public class StarRefillManager : MonoBehaviour
     public TextMeshProUGUI timerText;
 
     private int stars;
-    private const int refillAmount = 10;     // how many stars per refill
-    private const int refillIntervalHours = 1; // refill every 1 hour
+    private const int refillAmount = 50;
+    private const int refillIntervalMinutes = 30; 
     private DateTime lastRefillTime;
 
     void Start()
     {
-        // Load current stars
+        // Load saved stars and last refill time
         stars = PlayerPrefs.GetInt("Stars", 0);
 
-        // Load last refill time
-        string savedTime = PlayerPrefs.GetString("LastRefillTime", "");
+        string savedTime = PlayerPrefs.GetString("LastStarRefillTime", "");
         if (!string.IsNullOrEmpty(savedTime))
         {
             lastRefillTime = DateTime.Parse(savedTime);
@@ -27,37 +26,43 @@ public class StarRefillManager : MonoBehaviour
         else
         {
             lastRefillTime = DateTime.Now;
-            PlayerPrefs.SetString("LastRefillTime", lastRefillTime.ToString());
+            PlayerPrefs.SetString("LastStarRefillTime", lastRefillTime.ToString());
         }
 
-        // Check for refills that happened while player was offline
+        // Check if player deserves offline refill
         CheckForOfflineRefill();
-
         UpdateUI();
     }
 
     void Update()
+{
+    // Calculate how long it's been since last refill
+    TimeSpan timeSinceLastRefill = DateTime.Now - lastRefillTime;
+
+    // Check if it's time to refill stars
+    if (timeSinceLastRefill.TotalMinutes >= refillIntervalMinutes)
     {
-        TimeSpan timeSinceLastRefill = DateTime.Now - lastRefillTime;
+        AddStars(refillAmount);
+        lastRefillTime = DateTime.Now;
+        PlayerPrefs.SetString("LastStarRefillTime", lastRefillTime.ToString());
+        PlayerPrefs.Save();
+    }
 
-        if (timeSinceLastRefill.TotalHours >= refillIntervalHours)
-        {
-            AddStars(refillAmount);
-            lastRefillTime = DateTime.Now;
-            PlayerPrefs.SetString("LastRefillTime", lastRefillTime.ToString());
-            PlayerPrefs.Save();
-        }
-
-        // Update timer countdown
-        TimeSpan remaining = TimeSpan.FromHours(refillIntervalHours) - timeSinceLastRefill;
-        if (remaining.TotalSeconds < 0)
+    // Calculate remaining time until next refill
+    TimeSpan remaining = TimeSpan.FromMinutes(refillIntervalMinutes) - timeSinceLastRefill;
+    if (remaining.TotalSeconds < 0)
         {
             remaining = TimeSpan.Zero;
-
-        timerText.text = $"Next refill in: {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
         }
         
-    }
+
+    // Always display "Earning stars in:"
+    if (timerText != null)
+        {
+            timerText.text = $"Earning stars in: {remaining.Minutes:D2}:{remaining.Seconds:D2}";
+        }
+        
+}
 
     void AddStars(int amount)
     {
@@ -65,20 +70,20 @@ public class StarRefillManager : MonoBehaviour
         PlayerPrefs.SetInt("Stars", stars);
         PlayerPrefs.Save();
         UpdateUI();
-        Debug.Log($"+{amount} stars added. Total = {stars}");
+        Debug.Log($"+{amount} stars added! Total stars = {stars}");
     }
 
     void CheckForOfflineRefill()
     {
         TimeSpan offlineTime = DateTime.Now - lastRefillTime;
-        int hoursPassed = (int)offlineTime.TotalHours;
+        int intervalsPassed = (int)(offlineTime.TotalMinutes / refillIntervalMinutes);
 
-        if (hoursPassed > 0)
+        if (intervalsPassed > 0)
         {
-            int starsToAdd = hoursPassed * refillAmount;
+            int starsToAdd = intervalsPassed * refillAmount;
             AddStars(starsToAdd);
             lastRefillTime = DateTime.Now;
-            PlayerPrefs.SetString("LastRefillTime", lastRefillTime.ToString());
+            PlayerPrefs.SetString("LastStarRefillTime", lastRefillTime.ToString());
             PlayerPrefs.Save();
         }
     }

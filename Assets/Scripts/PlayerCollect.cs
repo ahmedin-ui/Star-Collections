@@ -25,6 +25,12 @@ public class PlayerCollect : MonoBehaviour
         starText.text = "Stars: " + collectedStars + " / " + totalStars;
         winPanel.SetActive(false);
         gameOverPanel.SetActive(false);
+        currentAttempts = maxAttempts;
+        UpdateAttemptUI();
+        if (noAttemptsPanel != null)
+        {
+            noAttemptsPanel.SetActive(false);
+        }
     }
 
     private void OnTriggerEnter(Collider other)

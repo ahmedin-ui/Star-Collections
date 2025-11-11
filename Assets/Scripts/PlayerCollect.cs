@@ -15,6 +15,7 @@ public class PlayerCollect : MonoBehaviour
     private int currentAttempts;
     public TextMeshProUGUI attemptText;
     public GameObject noAttemptsPanel;
+    public GameObject mainMenuButton;
 
     void Start()
     {
@@ -70,32 +71,34 @@ public class PlayerCollect : MonoBehaviour
     }
 
     void GameOver()
+{
+    // Show game over panel
+    gameOverPanel.SetActive(true);
+    Time.timeScale = 0f; // Pause the game
+
+    // Decrease attempts
+    currentAttempts--;
+
+    if (currentAttempts > 0)
     {
-        Time.timeScale = 0f;
-
-        if (currentAttempts > 1)
-        {
-            currentAttempts--;
-            PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
-            PlayerPrefs.Save();
-
-            gameOverPanel.SetActive(true);
-            Debug.Log("Game Over! Attempts left: " + currentAttempts);
-        }
-        else
-        {
-            currentAttempts = 0;
-            PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
-            PlayerPrefs.Save();
-
-            if (noAttemptsPanel != null)
-                noAttemptsPanel.SetActive(true);
-            else
-                Debug.Log("No attempts left!");
-        }
-
-        UpdateAttemptUI();
+        Debug.Log("Game Over! Attempts left: " + currentAttempts);
     }
+    else
+    {
+        Debug.Log("All attempts are over!");
+
+        // Show "No Attempts Left" message
+        if (noAttemptsPanel != null)
+            noAttemptsPanel.SetActive(true);
+
+        // Show Main Menu button (so player can exit)
+        if (mainMenuButton != null)
+            mainMenuButton.SetActive(true);
+    }
+
+    UpdateAttemptUI();
+}
+
 
     public void RestartGame()
     {

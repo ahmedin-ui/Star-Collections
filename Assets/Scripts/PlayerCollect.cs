@@ -122,6 +122,6 @@ public class PlayerCollect : MonoBehaviour
     public void GoToMainMenu()
     {
         Time.timeScale = 1f; // Ensure game is unpaused
-        SceneManager.LoadScene("MainMenu"); // Load Main Menu scene
+        SceneManager.LoadScene("MainMenuScene"); // Load Main Menu scene
     }
 }

@@ -13,6 +13,11 @@ public class PlayerCollect : MonoBehaviour
     private int collectedStars = 0;
     public GameObject winPanel;
     public GameObject gameOverPanel;
+    public int maxAttempts = 3;
+    private int currentAttempts;
+    public TextMeshProUGUI attemptText;
+    public GameObject noAttemptsPanel;
+    
 
     void Start()
     {

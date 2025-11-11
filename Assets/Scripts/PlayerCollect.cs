@@ -68,19 +68,57 @@ public class PlayerCollect : MonoBehaviour
         winPanel.SetActive(true);
         Debug.Log("You Won!");
         int reward = 10;
-        ScoreManager.Instance.AddStars(reward);
+        ScoreManager.Instance.AddStars(reward); // Pause the game
         Debug.Log("You won! +" + reward + " stars");
     }
     void GameOver()
     {
         gameOverPanel.SetActive(true);
         Time.timeScale = 0f; // Pause the game
+        currentAttempts--;
+        if (currentAttempts > 0)
+        {
+            gameOverPanel.SetActive(true);
+            Debug.Log("Game Over! Attempts left: " + currentAttempts);
+        }
+        else
+        {
+            if (noAttemptsPanel != null)
+            {
+                noAttemptsPanel.SetActive(true);
+            }
+            else
+            {
+                Debug.Log("No attempts left!");
+            }
+        }
+        UpdateAttemptUI();
+        Time.timeScale = 0f; // Pause the game
     }
     public void RestartGame()
     {
         Time.timeScale = 1f; // resume game speed
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (currentAttempts > 0)
+        {
+            Time.timeScale = 1f; // resume game speed
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            Debug.Log("No attempts left! Retry disabled.");
+            if (noAttemptsPanel != null)
+            {
+                noAttemptsPanel.SetActive(true);
+            }
+        }
     }
- 
+ public void UpdateAttemptUI()
+    {
+        if (attemptText != null)
+        {
+            attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
+        }
+    }
 
 }

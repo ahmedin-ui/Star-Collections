@@ -119,4 +119,9 @@ public class PlayerCollect : MonoBehaviour
         if (attemptText != null)
             attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
     }
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f; // Ensure game is unpaused
+        SceneManager.LoadScene("MainMenu"); // Load Main Menu scene
+    }
 }

@@ -71,19 +71,24 @@ public class ScoreManager : MonoBehaviour
             StarText.text = "Stars: " + Stars.ToString();
     }
     public bool SpendStars(int amount)
+    {
+        if (Stars >= amount)
+        {
+            Stars -= amount;
+            SaveStars();
+            UpdateStarUI();
+            Debug.Log(amount + " stars spent!");
+            return true;
+        }
+        else
+        {
+            Debug.Log("Not enough stars to spend!");
+            return false;
+        }
+    }
+public void CheatAddStars()
 {
-    if (Stars >= amount)
-    {
-        Stars -= amount;
-        SaveStars();
-        UpdateStarUI();
-        Debug.Log(amount + " stars spent!");
-        return true;
-    }
-    else
-    {
-        Debug.Log("Not enough stars to spend!");
-        return false;
-    }
+    AddStars(50);
+    Debug.Log("Cheat activated! +50 stars");
 }
 }

@@ -70,4 +70,20 @@ public class ScoreManager : MonoBehaviour
         if (StarText != null)
             StarText.text = "Stars: " + Stars.ToString();
     }
+    public bool SpendStars(int amount)
+{
+    if (Stars >= amount)
+    {
+        Stars -= amount;
+        SaveStars();
+        UpdateStarUI();
+        Debug.Log(amount + " stars spent!");
+        return true;
+    }
+    else
+    {
+        Debug.Log("Not enough stars to spend!");
+        return false;
+    }
+}
 }

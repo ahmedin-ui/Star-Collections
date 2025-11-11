@@ -10,7 +10,7 @@ public class GameStartManager : MonoBehaviour
     {
         int entryStars = 5; // ⭐ Entry cost
 
-        if (EconomyManager.Instance.SpendStars(entryStars))
+        if (ScoreManager.Instance.SpendStars(entryStars))
         {
             Debug.Log("5 Stars spent! Starting game...");
             SceneManager.LoadScene("GameScene");

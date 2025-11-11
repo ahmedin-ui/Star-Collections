@@ -25,12 +25,19 @@ public class PlayerCollect : MonoBehaviour
         winPanel.SetActive(false);
         gameOverPanel.SetActive(false);
 
-        // ✅ Load attempts from PlayerPrefs, or start at max if none saved yet
+       
         currentAttempts = PlayerPrefs.GetInt("AttemptsLeft", maxAttempts);
         UpdateAttemptUI();
 
         if (noAttemptsPanel != null)
+        {
             noAttemptsPanel.SetActive(false);
+        }
+        if (mainMenuButton != null)
+        {
+            mainMenuButton.SetActive(false);
+        }
+            
     }
 
     private void OnTriggerEnter(Collider other)
@@ -45,17 +52,26 @@ public class PlayerCollect : MonoBehaviour
             ScoreManager.Instance.AddStars(1);
 
             if (collectedStars >= totalStars)
+            {
                 WinGame();
+            }
+                
         }
 
         if (other.CompareTag("Obstacle"))
+        {
             GameOver();
+        }
+            
     }
 
     void Update()
     {
         if (transform.position.y < -200)
+        {
             GameOver();
+        }
+            
     }
 
     void WinGame()
@@ -66,7 +82,7 @@ public class PlayerCollect : MonoBehaviour
         ScoreManager.Instance.AddStars(reward);
         Debug.Log("You won! +" + reward + " stars");
 
-        // ✅ Reset attempts after winning
+        
         PlayerPrefs.DeleteKey("AttemptsLeft");
     }
 
@@ -87,13 +103,19 @@ public class PlayerCollect : MonoBehaviour
     {
         Debug.Log("All attempts are over!");
 
-        // Show "No Attempts Left" message
+        
         if (noAttemptsPanel != null)
-            noAttemptsPanel.SetActive(true);
+            {
+                noAttemptsPanel.SetActive(true);
+            }
+            
 
         // Show Main Menu button (so player can exit)
         if (mainMenuButton != null)
-            mainMenuButton.SetActive(true);
+            {
+                mainMenuButton.SetActive(true);
+            }
+            
     }
 
     UpdateAttemptUI();
@@ -102,9 +124,9 @@ public class PlayerCollect : MonoBehaviour
 
     public void RestartGame()
     {
-        int savedAttempts = PlayerPrefs.GetInt("AttemptsLeft", maxAttempts);
+        currentAttempts = PlayerPrefs.GetInt("AttemptsLeft", maxAttempts);
 
-        if (savedAttempts > 0)
+        if (currentAttempts > 0)
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -113,18 +135,25 @@ public class PlayerCollect : MonoBehaviour
         {
             Debug.Log("No attempts left! Restart disabled.");
             if (noAttemptsPanel != null)
+            {
                 noAttemptsPanel.SetActive(true);
+            }
+                
         }
     }
 
     public void UpdateAttemptUI()
     {
         if (attemptText != null)
-            attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
+        {
+             attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
+        }
+           
     }
     public void GoToMainMenu()
     {
         Time.timeScale = 1f; // Ensure game is unpaused
+        PlayerPrefs.DeleteKey("AttemptsLeft");
         SceneManager.LoadScene("MainMenuScene"); // Load Main Menu scene
     }
 }

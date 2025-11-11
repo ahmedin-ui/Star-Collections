@@ -56,6 +56,9 @@ public class PlayerCollect : MonoBehaviour
     {
         winPanel.SetActive(true);
         Debug.Log("You Won!");
+        int reward = 10;
+        ScoreManager.Instance.AddStars(reward);
+        Debug.Log("You won! +" + reward + " stars");
     }
     void GameOver()
     {

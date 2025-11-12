@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class PlayerCollect : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerCollect : MonoBehaviour
     public TextMeshProUGUI attemptText;
     public GameObject noAttemptsPanel;
     public GameObject mainMenuButton;
+
     private bool isGameOver = false;
 
     void Start()
@@ -26,19 +28,13 @@ public class PlayerCollect : MonoBehaviour
         winPanel.SetActive(false);
         gameOverPanel.SetActive(false);
 
-       
         currentAttempts = PlayerPrefs.GetInt("AttemptsLeft", maxAttempts);
         UpdateAttemptUI();
 
         if (noAttemptsPanel != null)
-        {
             noAttemptsPanel.SetActive(false);
-        }
         if (mainMenuButton != null)
-        {
             mainMenuButton.SetActive(false);
-        }
-            
     }
 
     private void OnTriggerEnter(Collider other)
@@ -53,17 +49,13 @@ public class PlayerCollect : MonoBehaviour
             ScoreManager.Instance.AddStars(1);
 
             if (collectedStars >= totalStars)
-            {
                 WinGame();
-            }
-                
         }
 
         if (other.CompareTag("Obstacle"))
         {
             GameOver();
         }
-            
     }
 
     void Update()
@@ -72,7 +64,6 @@ public class PlayerCollect : MonoBehaviour
         {
             GameOver();
         }
-            
     }
 
     void WinGame()
@@ -83,76 +74,84 @@ public class PlayerCollect : MonoBehaviour
         ScoreManager.Instance.AddStars(reward);
         Debug.Log("You won! +" + reward + " stars");
 
-        
         PlayerPrefs.DeleteKey("AttemptsLeft");
     }
 
-void GameOver()
-{
-        if (isGameOver)
-        {
-            return;
-        }
-    isGameOver = true;
-    gameOverPanel.SetActive(true);
-    Time.timeScale = 0f; // Pause the game
-
-    currentAttempts--;
-
-    // Save attempts
-    PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
-    PlayerPrefs.Save();
-
-    if (currentAttempts > 0)
+    void GameOver()
     {
-        Debug.Log("Game Over! Attempts left: " + currentAttempts);
+        if (isGameOver) return;
+        isGameOver = true;
+
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0f; // Pause the game
+
+        currentAttempts--;
+        PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
+        PlayerPrefs.Save();
+
+        if (currentAttempts > 0)
+        {
+            Debug.Log("Game Over! Attempts left: " + currentAttempts);
+        }
+        else
+        {
+            Debug.Log("All attempts are over!");
+
+            if (noAttemptsPanel != null)
+                noAttemptsPanel.SetActive(true);
+
+            if (mainMenuButton != null)
+                mainMenuButton.SetActive(true);
+
+            // Start the auto-reset countdown
+            StartCoroutine(ResetAttemptsAfterDelay(30f));
+        }
+
+        UpdateAttemptUI();
     }
-    else
+
+    IEnumerator ResetAttemptsAfterDelay(float delay)
     {
-        Debug.Log("All attempts are over!");
-        if (noAttemptsPanel != null)
-        {
-            noAttemptsPanel.SetActive(true);
-        }
-        if (mainMenuButton != null)
-        {
-            mainMenuButton.SetActive(true);
-        }
-    }
+        Debug.Log("Waiting " + delay + " seconds to reset attempts...");
 
-    UpdateAttemptUI();
-}
+        yield return new WaitForSecondsRealtime(delay);
 
+        // Reset attempts
+        currentAttempts = maxAttempts;
+        PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
+        PlayerPrefs.Save();
 
-    public void RestartGame()
-{
-    if (currentAttempts > 0)
-    {
-        Time.timeScale = 1f;
+        Debug.Log("Attempts reset! Restarting game...");
+
+        Time.timeScale = 1f; // Unpause before reloading
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    else
+
+    public void RestartGame()
     {
-        Debug.Log("No attempts left! Restart disabled.");
-        if (noAttemptsPanel != null)
+        if (currentAttempts > 0)
         {
-            noAttemptsPanel.SetActive(true);
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            Debug.Log("No attempts left! Restart disabled.");
+            if (noAttemptsPanel != null)
+                noAttemptsPanel.SetActive(true);
         }
     }
-}
 
     public void UpdateAttemptUI()
     {
         if (attemptText != null)
-        {
-             attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
-        }
-           
+            attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
     }
+
     public void GoToMainMenu()
     {
-        Time.timeScale = 1f; // Ensure game is unpaused
+        Time.timeScale = 1f;
         PlayerPrefs.DeleteKey("AttemptsLeft");
-        SceneManager.LoadScene("MainMenuScene"); // Load Main Menu scene
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

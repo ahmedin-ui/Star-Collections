@@ -16,6 +16,7 @@ public class PlayerCollect : MonoBehaviour
     public TextMeshProUGUI attemptText;
     public GameObject noAttemptsPanel;
     public GameObject mainMenuButton;
+    private bool isGameOver = false;
 
     void Start()
     {
@@ -86,14 +87,21 @@ public class PlayerCollect : MonoBehaviour
         PlayerPrefs.DeleteKey("AttemptsLeft");
     }
 
-    void GameOver()
+void GameOver()
 {
-    // Show game over panel
+        if (isGameOver)
+        {
+            return;
+        }
+    isGameOver = true;
     gameOverPanel.SetActive(true);
     Time.timeScale = 0f; // Pause the game
 
-    // Decrease attempts
     currentAttempts--;
+
+    // Save attempts
+    PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
+    PlayerPrefs.Save();
 
     if (currentAttempts > 0)
     {
@@ -102,20 +110,14 @@ public class PlayerCollect : MonoBehaviour
     else
     {
         Debug.Log("All attempts are over!");
-
-        
         if (noAttemptsPanel != null)
-            {
-                noAttemptsPanel.SetActive(true);
-            }
-            
-
-        // Show Main Menu button (so player can exit)
+        {
+            noAttemptsPanel.SetActive(true);
+        }
         if (mainMenuButton != null)
-            {
-                mainMenuButton.SetActive(true);
-            }
-            
+        {
+            mainMenuButton.SetActive(true);
+        }
     }
 
     UpdateAttemptUI();
@@ -123,24 +125,21 @@ public class PlayerCollect : MonoBehaviour
 
 
     public void RestartGame()
+{
+    if (currentAttempts > 0)
     {
-        currentAttempts = PlayerPrefs.GetInt("AttemptsLeft", maxAttempts);
-
-        if (currentAttempts > 0)
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    else
+    {
+        Debug.Log("No attempts left! Restart disabled.");
+        if (noAttemptsPanel != null)
         {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-        else
-        {
-            Debug.Log("No attempts left! Restart disabled.");
-            if (noAttemptsPanel != null)
-            {
-                noAttemptsPanel.SetActive(true);
-            }
-                
+            noAttemptsPanel.SetActive(true);
         }
     }
+}
 
     public void UpdateAttemptUI()
     {

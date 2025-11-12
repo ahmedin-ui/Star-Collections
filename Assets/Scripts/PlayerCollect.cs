@@ -16,7 +16,6 @@ public class PlayerCollect : MonoBehaviour
     private int currentAttempts;
     public TextMeshProUGUI attemptText;
     public GameObject noAttemptsPanel;
-    public GameObject mainMenuButton;
 
     public TextMeshProUGUI countdownText; 
 
@@ -34,11 +33,15 @@ public class PlayerCollect : MonoBehaviour
         UpdateAttemptUI();
 
         if (noAttemptsPanel != null)
+        {
             noAttemptsPanel.SetActive(false);
-        if (mainMenuButton != null)
-            mainMenuButton.SetActive(false);
+        }
+            
         if (countdownText != null)
+        {
             countdownText.text = "";
+        }
+            
     }
 
     private void OnTriggerEnter(Collider other)
@@ -97,10 +100,10 @@ public class PlayerCollect : MonoBehaviour
             Debug.Log("All attempts are over!");
 
             if (noAttemptsPanel != null)
+            {
                 noAttemptsPanel.SetActive(true);
-
-            if (mainMenuButton != null)
-                mainMenuButton.SetActive(true);
+            }
+                  
 
             // Start countdown
             StartCoroutine(ResetAttemptsAfterDelay(30f));
@@ -116,7 +119,10 @@ public class PlayerCollect : MonoBehaviour
         while (remaining > 0)
         {
             if (countdownText != null)
+            {
                 countdownText.text = "Restarting in: " + Mathf.CeilToInt(remaining) + "s";
+            }
+                
 
             yield return new WaitForSecondsRealtime(1f);
             remaining -= 1f;
@@ -128,10 +134,11 @@ public class PlayerCollect : MonoBehaviour
         PlayerPrefs.Save();
 
         if (countdownText != null)
+        {
             countdownText.text = "Restarting...";
-
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Time.timeScale = 1f;
+        }
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void RestartGame()
@@ -154,10 +161,5 @@ public class PlayerCollect : MonoBehaviour
             attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
     }
 
-    public void GoToMainMenu()
-    {
-        Time.timeScale = 1f;
-        PlayerPrefs.DeleteKey("AttemptsLeft");
-        SceneManager.LoadScene("MainMenuScene");
-    }
+    
 }

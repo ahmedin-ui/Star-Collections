@@ -158,7 +158,10 @@ public class PlayerCollect : MonoBehaviour
     public void UpdateAttemptUI()
     {
         if (attemptText != null)
+        {
             attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
+        }
+            
     }
 
     

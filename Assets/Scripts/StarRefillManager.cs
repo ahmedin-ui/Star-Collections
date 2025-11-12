@@ -7,7 +7,7 @@ public class StarRefillManager : MonoBehaviour
     public TextMeshProUGUI timerText;
 
     private int stars;
-    private const int refillAmount = 50;
+    private const int refillAmount = 20;
     private const float refillInterval = 1800f; // 30 minutes = 1800 seconds
     private float refillTimer = 0f;
 

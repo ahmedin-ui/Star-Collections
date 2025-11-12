@@ -18,6 +18,8 @@ public class PlayerCollect : MonoBehaviour
     public GameObject noAttemptsPanel;
     public GameObject mainMenuButton;
 
+    public TextMeshProUGUI countdownText; 
+
     private bool isGameOver = false;
 
     void Start()
@@ -35,12 +37,12 @@ public class PlayerCollect : MonoBehaviour
             noAttemptsPanel.SetActive(false);
         if (mainMenuButton != null)
             mainMenuButton.SetActive(false);
+        if (countdownText != null)
+            countdownText.text = "";
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Triggered with: " + other.name + " (tag: " + other.tag + ")");
-
         if (other.CompareTag("Star"))
         {
             Destroy(other.gameObject);
@@ -69,11 +71,8 @@ public class PlayerCollect : MonoBehaviour
     void WinGame()
     {
         winPanel.SetActive(true);
-        Debug.Log("You Won!");
         int reward = 10;
         ScoreManager.Instance.AddStars(reward);
-        Debug.Log("You won! +" + reward + " stars");
-
         PlayerPrefs.DeleteKey("AttemptsLeft");
     }
 
@@ -83,7 +82,7 @@ public class PlayerCollect : MonoBehaviour
         isGameOver = true;
 
         gameOverPanel.SetActive(true);
-        Time.timeScale = 0f; // Pause the game
+        Time.timeScale = 0f;
 
         currentAttempts--;
         PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
@@ -103,7 +102,7 @@ public class PlayerCollect : MonoBehaviour
             if (mainMenuButton != null)
                 mainMenuButton.SetActive(true);
 
-            // Start the auto-reset countdown
+            // Start countdown
             StartCoroutine(ResetAttemptsAfterDelay(30f));
         }
 
@@ -112,18 +111,26 @@ public class PlayerCollect : MonoBehaviour
 
     IEnumerator ResetAttemptsAfterDelay(float delay)
     {
-        Debug.Log("Waiting " + delay + " seconds to reset attempts...");
+        float remaining = delay;
 
-        yield return new WaitForSecondsRealtime(delay);
+        while (remaining > 0)
+        {
+            if (countdownText != null)
+                countdownText.text = "Restarting in: " + Mathf.CeilToInt(remaining) + "s";
+
+            yield return new WaitForSecondsRealtime(1f);
+            remaining -= 1f;
+        }
 
         // Reset attempts
         currentAttempts = maxAttempts;
         PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
         PlayerPrefs.Save();
 
-        Debug.Log("Attempts reset! Restarting game...");
+        if (countdownText != null)
+            countdownText.text = "Restarting...";
 
-        Time.timeScale = 1f; // Unpause before reloading
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -136,7 +143,6 @@ public class PlayerCollect : MonoBehaviour
         }
         else
         {
-            Debug.Log("No attempts left! Restart disabled.");
             if (noAttemptsPanel != null)
                 noAttemptsPanel.SetActive(true);
         }

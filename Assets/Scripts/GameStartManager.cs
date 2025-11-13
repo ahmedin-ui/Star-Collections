@@ -8,7 +8,7 @@ public class GameStartManager : MonoBehaviour
     // Start is called before the first frame update
     public void StartGame()
     {
-        int entryStars = 20; // Entry cost
+        int entryStars = 2000; // Entry cost
 
         if (ScoreManager.Instance.SpendStars(entryStars))
         {

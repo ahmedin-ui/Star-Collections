@@ -7,17 +7,24 @@ public class GameStartManager : MonoBehaviour
 {
     // Start is called before the first frame update
     public void StartGame()
-    {
-        int entryStars = 2000; // Entry cost
+{
+    Debug.Log("StartGame() button pressed");
+    int entryStars = 10;
 
-        if (ScoreManager.Instance.SpendStars(entryStars))
-        {
-            Debug.Log("5 Stars spent! Starting game...");
-            SceneManager.LoadScene("GameScene");
-        }
-        else
-        {
-            Debug.Log("Not enough stars to play!");
-        }
+    if (ScoreManager.Instance == null)
+    {
+        Debug.LogError("ScoreManager instance not found! Make sure it's in the MainMenu scene.");
+        return;
     }
+
+    if (ScoreManager.Instance.SpendStars(entryStars))
+    {
+        Debug.Log("10 stars spent! Loading GameScene...");
+        SceneManager.LoadScene("GameScene");
+    }
+    else
+    {
+        Debug.Log("Not enough stars to play!");
+    }
+}
 }

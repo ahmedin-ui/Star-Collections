@@ -11,38 +11,50 @@ public class ScoreManager : MonoBehaviour
     private const string STARS_KEY = "PlayerStars";
     public int Stars { get; private set; }
 
-    [Header("UI Reference (Optional)")]
-    public TextMeshProUGUI StarText; // Drag your LobbyScene text here (optional)
+    [Header("UI Reference")]
+    public TextMeshProUGUI StarCountText; // Assign this in Inspector
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        // Singleton setup
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
         LoadStars();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
     {
+        TryFindStarText();
         UpdateStarUI();
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        Debug.Log("Loaded Stars: " + Stars);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Try to find the "StarText_Game" object automatically in new scenes
-        if (StarText == null)
+        TryFindStarText();
+        UpdateStarUI();
+    }
+
+    private void TryFindStarText()
+    {
+        // If not assigned manually, try finding it automatically by name
+        if (StarCountText == null)
         {
-            var foundText = GameObject.Find("StarText_Game");
-            if (foundText != null)
+            var found = GameObject.Find("StarCountText");
+            if (found != null)
             {
-                StarText = foundText.GetComponent<TextMeshProUGUI>();
-                UpdateStarUI();
+                StarCountText = found.GetComponent<TextMeshProUGUI>();
+                Debug.Log("Found StarCountText in scene: " + found.name);
             }
         }
     }
@@ -54,22 +66,6 @@ public class ScoreManager : MonoBehaviour
         UpdateStarUI();
     }
 
-    public void SaveStars()
-    {
-        PlayerPrefs.SetInt(STARS_KEY, Stars);
-        PlayerPrefs.Save();
-    }
-
-    public void LoadStars()
-    {
-        Stars = PlayerPrefs.GetInt(STARS_KEY, 0);
-    }
-
-    private void UpdateStarUI()
-    {
-        if (StarText != null)
-            StarText.text = "Stars: " + Stars.ToString();
-    }
     public bool SpendStars(int amount)
     {
         if (Stars >= amount)
@@ -77,7 +73,7 @@ public class ScoreManager : MonoBehaviour
             Stars -= amount;
             SaveStars();
             UpdateStarUI();
-            Debug.Log(amount + " stars spent!");
+            Debug.Log($"Spent {amount} stars. Remaining: {Stars}");
             return true;
         }
         else
@@ -86,9 +82,30 @@ public class ScoreManager : MonoBehaviour
             return false;
         }
     }
-public void CheatAddStars()
-{
-    AddStars(50);
-    Debug.Log("Cheat activated! +50 stars");
-}
+
+    private void UpdateStarUI()
+    {
+        if (StarCountText != null)
+        {
+            StarCountText.text = Stars.ToString();
+        }
+    }
+
+    private void SaveStars()
+    {
+        PlayerPrefs.SetInt(STARS_KEY, Stars);
+        PlayerPrefs.Save();
+    }
+
+    private void LoadStars()
+    {
+        Stars = PlayerPrefs.GetInt(STARS_KEY, 0);
+    }
+
+    // Optional cheat button
+    public void CheatAddStars()
+    {
+        AddStars(50);
+        Debug.Log("Cheat activated! +50 stars");
+    }
 }

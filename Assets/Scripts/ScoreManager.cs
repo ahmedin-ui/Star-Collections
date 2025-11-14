@@ -110,6 +110,6 @@ public class ScoreManager : MonoBehaviour
     }
     public int GetStars()
     {
-        return stars;
+        return Stars;
     }
 }

@@ -108,4 +108,8 @@ public class ScoreManager : MonoBehaviour
         AddStars(50);
         Debug.Log("Cheat activated! +50 stars");
     }
+    public int GetStars()
+    {
+        return stars;
+    }
 }

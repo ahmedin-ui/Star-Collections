@@ -43,6 +43,10 @@ public class PlayerCollect : MonoBehaviour
         {
             countdownText.text = "";
         }
+        if (totalStarsText != null)
+        {
+            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -61,6 +65,10 @@ public class PlayerCollect : MonoBehaviour
         if (other.CompareTag("Obstacle"))
         {
             GameOver();
+        }
+        if (totalStarsText != null)
+        {
+            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
         }
     }
 
@@ -81,6 +89,10 @@ public class PlayerCollect : MonoBehaviour
         ScoreManager.Instance.AddStars(reward);
 
         PlayerPrefs.DeleteKey("AttemptsLeft");  // reset attempts on win
+        if (totalStarsText != null)
+        {
+            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
+        }
     }
 
     void GameOver()
@@ -117,6 +129,10 @@ public class PlayerCollect : MonoBehaviour
         }
 
         UpdateAttemptUI();
+        if (totalStarsText != null)
+        {
+            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
+        }
     }
 
     IEnumerator ResetAttemptsAfterDelay(float delay)

@@ -16,7 +16,6 @@ public class ScoreManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton setup
         if (Instance == null)
         {
             Instance = this;
@@ -47,7 +46,6 @@ public class ScoreManager : MonoBehaviour
 
     private void TryFindStarText()
     {
-        // If not assigned manually, try finding it automatically by name
         if (StarCountText == null)
         {
             var found = GameObject.Find("StarCountText");
@@ -59,6 +57,7 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
+    // ✔ Correct AddStars() – KEEP THIS VERSION ONLY
     public void AddStars(int amount)
     {
         Stars += amount;
@@ -102,12 +101,12 @@ public class ScoreManager : MonoBehaviour
         Stars = PlayerPrefs.GetInt(STARS_KEY, 0);
     }
 
-    // Optional cheat button
     public void CheatAddStars()
     {
         AddStars(50);
         Debug.Log("Cheat activated! +50 stars");
     }
+
     public int GetStars()
     {
         return Stars;

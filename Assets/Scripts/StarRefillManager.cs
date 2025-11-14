@@ -10,25 +10,24 @@ public class StarRefillManager : MonoBehaviour
 
     private int stars;
     private const int refillAmount = 20;
-    private const float refillInterval = 30f; // 30 minutes = 1800 seconds
+    private const float refillInterval = 30f;
     private float refillTimer = 0f;
 
     void Start()
     {
-        // Load saved stars only (no real time)
-        stars = PlayerPrefs.GetInt("Stars", 0);
+        stars = ScoreManager.Instance.GetStars();
         refillTimer = 0f;
         UpdateUI();
     }
 
     void Update()
     {
-        refillTimer += Time.deltaTime; // counts only while game is open
+        refillTimer += Time.deltaTime;
 
         if (refillTimer >= refillInterval)
         {
             AddStars(refillAmount);
-            refillTimer = 0f; // reset timer
+            refillTimer = 0f;
         }
 
         UpdateTimerUI();
@@ -36,9 +35,8 @@ public class StarRefillManager : MonoBehaviour
 
     void AddStars(int amount)
     {
-        stars += amount;
-        PlayerPrefs.SetInt("Stars", stars);
-        PlayerPrefs.Save();
+        ScoreManager.Instance.AddStars(amount);
+        stars = ScoreManager.Instance.GetStars();
         UpdateUI();
         Debug.Log($"+{amount} stars added! Total stars = {stars}");
     }

@@ -21,6 +21,7 @@ public class PlayerCollect : MonoBehaviour
     public TextMeshProUGUI countdownText; 
 
     private bool isGameOver = false;
+    public TextMeshProUGUI totalStarsText;
 
     void Start()
     {
@@ -37,12 +38,11 @@ public class PlayerCollect : MonoBehaviour
         {
             noAttemptsPanel.SetActive(false);
         }
-            
+
         if (countdownText != null)
         {
             countdownText.text = "";
         }
-            
     }
 
     private void OnTriggerEnter(Collider other)
@@ -72,12 +72,15 @@ public class PlayerCollect : MonoBehaviour
         }
     }
 
+    // ⭐ MODIFIED → Game won now gives +20 stars
     void WinGame()
     {
         winPanel.SetActive(true);
-        int reward = 10;
+
+        int reward = 20;   // ⭐ CHANGED FROM 10 TO 20
         ScoreManager.Instance.AddStars(reward);
-        PlayerPrefs.DeleteKey("AttemptsLeft");
+
+        PlayerPrefs.DeleteKey("AttemptsLeft");  // reset attempts on win
     }
 
     void GameOver()
@@ -104,7 +107,10 @@ public class PlayerCollect : MonoBehaviour
             {
                 noAttemptsPanel.SetActive(true);
             }
-                  
+
+            // ⭐ ADDED → Apply penalty for losing all 3 attempts
+            ScoreManager.Instance.AddStars(-10);
+            Debug.Log("Penalty applied! -10 stars");
 
             // Start countdown
             StartCoroutine(ResetAttemptsAfterDelay(30f));
@@ -123,7 +129,6 @@ public class PlayerCollect : MonoBehaviour
             {
                 countdownText.text = "Restarting in: " + Mathf.CeilToInt(remaining) + "s";
             }
-                
 
             yield return new WaitForSecondsRealtime(1f);
             remaining -= 1f;
@@ -139,7 +144,8 @@ public class PlayerCollect : MonoBehaviour
             countdownText.text = "Restarting...";
             Time.timeScale = 1f;
         }
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void RestartGame()
@@ -162,8 +168,5 @@ public class PlayerCollect : MonoBehaviour
         {
             attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
         }
-            
     }
-
-    
 }

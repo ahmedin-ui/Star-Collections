@@ -3,60 +3,78 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PlayerCollect : MonoBehaviour
 {
+    [Header("UI Elements")]
     public TextMeshProUGUI starText;
-    private int totalStars;
-    private int collectedStars = 0;
+    public TextMeshProUGUI attemptText;
+    public TextMeshProUGUI countdownText;
+    public TextMeshProUGUI totalStarsText;
 
+    [Header("Panels")]
     public GameObject winPanel;
     public GameObject gameOverPanel;
-    public int maxAttempts = 3;
-    private int currentAttempts;
-    public TextMeshProUGUI attemptText;
     public GameObject noAttemptsPanel;
 
-    public TextMeshProUGUI countdownText; 
+    [Header("Game Settings")]
+    public int maxAttempts = 3;
 
+    private int totalStars;
+    private int collectedStars = 0;
+    private int currentAttempts;
     private bool isGameOver = false;
-    public TextMeshProUGUI totalStarsText;
+    [Header("Hearts UI")]
+    public Image heart1;
+    public Image heart2;
+    public Image heart3;
 
     void Start()
     {
+        // Initialize total stars in the level
         totalStars = GameObject.FindGameObjectsWithTag("Star").Length;
-        starText.text = "Stars: " + collectedStars + " / " + totalStars;
+        if (starText != null)
+            starText.text = $"Stars: {collectedStars} / {totalStars}";
 
-        winPanel.SetActive(false);
-        gameOverPanel.SetActive(false);
+        // Panels
+        if (winPanel != null) winPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (noAttemptsPanel != null) noAttemptsPanel.SetActive(false);
 
+        // Attempts
         currentAttempts = PlayerPrefs.GetInt("AttemptsLeft", maxAttempts);
+        if (currentAttempts <= 0)
+        {
+            currentAttempts = maxAttempts;
+            PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
+            PlayerPrefs.Save();
+        }
         UpdateAttemptUI();
 
-        if (noAttemptsPanel != null)
-        {
-            noAttemptsPanel.SetActive(false);
-        }
+        // Countdown
+        if (countdownText != null) countdownText.text = "";
 
-        if (countdownText != null)
-        {
-            countdownText.text = "";
-        }
-        if (totalStarsText != null)
+        // Total stars display
+        if (totalStarsText != null && ScoreManager.Instance != null)
         {
             totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
         }
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (isGameOver) return;
+
         if (other.CompareTag("Star"))
         {
             Destroy(other.gameObject);
             collectedStars++;
-            starText.text = "Stars: " + collectedStars + " / " + totalStars;
-            ScoreManager.Instance.AddStars(1);
+            if (starText != null)
+                starText.text = $"Stars: {collectedStars} / {totalStars}";
+
+            if (ScoreManager.Instance != null)
+                ScoreManager.Instance.AddStars(1);
 
             if (collectedStars >= totalStars)
                 WinGame();
@@ -66,74 +84,70 @@ public class PlayerCollect : MonoBehaviour
         {
             GameOver();
         }
-        if (totalStarsText != null)
-        {
+
+        if (totalStarsText != null && ScoreManager.Instance != null)
             totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
-        }
     }
 
     void Update()
     {
-        if (transform.position.y < -200)
+        // Fall detection
+        if (!isGameOver && transform.position.y < -200)
         {
             GameOver();
         }
     }
 
-    // ⭐ MODIFIED → Game won now gives +20 stars
     void WinGame()
     {
-        winPanel.SetActive(true);
+        if (winPanel != null) winPanel.SetActive(true);
 
-        int reward = 20;   // ⭐ CHANGED FROM 10 TO 20
-        ScoreManager.Instance.AddStars(reward);
-
-        PlayerPrefs.DeleteKey("AttemptsLeft");  // reset attempts on win
-        if (totalStarsText != null)
+        if (ScoreManager.Instance != null)
         {
-            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
+            int reward = 20; // Reward for winning
+            ScoreManager.Instance.AddStars(reward);
         }
+
+        PlayerPrefs.DeleteKey("AttemptsLeft");
+
+        if (totalStarsText != null && ScoreManager.Instance != null)
+            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
     }
 
     void GameOver()
-    {
-        if (isGameOver) return;
-        isGameOver = true;
+{
+    if (isGameOver) return;
+    isGameOver = true;
 
+    if (gameOverPanel != null)
         gameOverPanel.SetActive(true);
-        Time.timeScale = 0f;
 
-        currentAttempts--;
-        PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
-        PlayerPrefs.Save();
+    Time.timeScale = 0f;
 
-        if (currentAttempts > 0)
-        {
-            Debug.Log("Game Over! Attempts left: " + currentAttempts);
-        }
-        else
-        {
-            Debug.Log("All attempts are over!");
+    // Only decrement once and clamp to 0
+    currentAttempts--;
+    PlayerPrefs.SetInt("AttemptsLeft", currentAttempts);
+    PlayerPrefs.Save();
 
-            if (noAttemptsPanel != null)
-            {
-                noAttemptsPanel.SetActive(true);
-            }
-
-            // ⭐ ADDED → Apply penalty for losing all 3 attempts
-            ScoreManager.Instance.AddStars(-10);
-            Debug.Log("Penalty applied! -10 stars");
-
-            // Start countdown
-            StartCoroutine(ResetAttemptsAfterDelay(30f));
-        }
-
-        UpdateAttemptUI();
-        if (totalStarsText != null)
-        {
-            totalStarsText.text = "Total: " + ScoreManager.Instance.GetStars();
-        }
+    if (currentAttempts > 0)
+    {
+        Debug.Log("Game Over! Attempts left: " + currentAttempts);
     }
+    else
+    {
+        Debug.Log("All attempts are over!");
+
+        if (noAttemptsPanel != null)
+            noAttemptsPanel.SetActive(true);
+
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.AddStars(-10);
+
+        StartCoroutine(ResetAttemptsAfterDelay(30f));
+    }
+    
+    UpdateAttemptUI();
+}
 
     IEnumerator ResetAttemptsAfterDelay(float delay)
     {
@@ -178,11 +192,46 @@ public class PlayerCollect : MonoBehaviour
         }
     }
 
-    public void UpdateAttemptUI()
+    void UpdateAttemptUI()
     {
-        if (attemptText != null)
+        AnimateHeart(heart1, currentAttempts >= 1);
+        AnimateHeart(heart2, currentAttempts >= 2);
+        AnimateHeart(heart3, currentAttempts >= 3);
+    }
+
+    void AnimateHeart(Image heart, bool show)
+    {
+        if (heart == null) return;
+
+        if (show)
         {
-            attemptText.text = "Attempts: " + currentAttempts + " / " + maxAttempts;
+            heart.gameObject.SetActive(true);
+            heart.rectTransform.localScale = Vector3.one;
         }
+        else
+        {
+            StartCoroutine(FallHeart(heart));
+        }
+    }
+
+    IEnumerator FallHeart(Image heart)
+    {
+        Vector3 originalPos = heart.rectTransform.localPosition;
+        Vector3 targetPos = originalPos + new Vector3(0, -50f, 0);
+
+        float timer = 0f;
+        float duration = 0.3f;
+
+        while (timer < duration)
+        {
+            heart.rectTransform.localPosition = Vector3.Lerp(originalPos, targetPos, timer / duration);
+            heart.rectTransform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, timer / duration);
+            timer += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        heart.rectTransform.localPosition = originalPos;
+        heart.rectTransform.localScale = Vector3.one;
+        heart.gameObject.SetActive(false);
     }
 }

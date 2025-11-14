@@ -143,7 +143,7 @@ public class PlayerCollect : MonoBehaviour
         if (ScoreManager.Instance != null)
             ScoreManager.Instance.AddStars(-10);
 
-        StartCoroutine(ResetAttemptsAfterDelay(30f));
+        StartCoroutine(ResetAttemptsAfterDelay(10f));
     }
     
     UpdateAttemptUI();
